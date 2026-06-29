@@ -31,13 +31,13 @@ html, body {
 
 .mono { font-family: var(--mono); }
 
-/* ── 织带：贯穿产品的签名元素 ── */
+/* â”€â”€ ç»‡å¸¦ï¼šè´¯ç©¿äº§å“çš„ç­¾åå…ƒç´  â”€â”€ */
 .lanyard {
   height: 12px;
   background: repeating-linear-gradient(45deg, #161616 0 18px, var(--red) 18px 24px, #161616 24px 42px, var(--cyan) 42px 48px);
 }
 
-/* ── 通用 ── */
+/* â”€â”€ é€šç”¨ â”€â”€ */
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -113,7 +113,7 @@ input:focus, textarea:focus, select:focus {
   box-shadow: 0 0 0 3px rgba(255, 36, 66, 0.12);
 }
 
-/* ── 入职页 ── */
+/* â”€â”€ å…¥èŒé¡µ â”€â”€ */
 .onboarding { min-height: 100vh; padding-bottom: 80px; }
 .onboardHero { max-width: 1040px; margin: 56px auto 36px; padding: 0 20px; }
 .onboardHero h1 { font-size: 40px; font-weight: 900; margin: 0 0 14px; letter-spacing: 0.5px; }
@@ -131,7 +131,7 @@ input:focus, textarea:focus, select:focus {
 }
 .badgeCaption { text-align: center; color: var(--ink2); font-size: 13px; margin-top: 14px; }
 
-/* ── 工牌（完整版）── */
+/* â”€â”€ å·¥ç‰Œï¼ˆå®Œæ•´ç‰ˆï¼‰â”€â”€ */
 .badgeCard {
   background: #fff;
   border: 1px solid var(--line);
@@ -176,7 +176,7 @@ input:focus, textarea:focus, select:focus {
   transform: rotate(-6deg);
 }
 
-/* ── 工牌（mini）── */
+/* â”€â”€ å·¥ç‰Œï¼ˆminiï¼‰â”€â”€ */
 .badgeMini {
   display: flex; align-items: center; gap: 12px;
   background: #fff;
@@ -202,7 +202,7 @@ input:focus, textarea:focus, select:focus {
   margin-left: 6px;
 }
 
-/* ── 表单卡 ── */
+/* â”€â”€ è¡¨å•å¡ â”€â”€ */
 .formCard { padding: 28px; }
 .formHead h2 { margin: 0 0 6px; font-size: 22px; font-weight: 900; }
 .formHead p { margin: 0 0 22px; color: var(--ink2); font-size: 14px; }
@@ -210,7 +210,7 @@ input:focus, textarea:focus, select:focus {
 .field span { display: block; font-size: 13px; font-weight: 700; color: var(--ink2); margin-bottom: 6px; }
 .field span i { color: var(--red); font-style: normal; }
 
-/* ── 工作台 ── */
+/* â”€â”€ å·¥ä½œå° â”€â”€ */
 .workbench { min-height: 100vh; padding-bottom: 100px; }
 .topbar {
   max-width: 1180px;
@@ -257,7 +257,7 @@ input:focus, textarea:focus, select:focus {
 .emptyCard { padding: 56px 24px; text-align: center; color: var(--ink2); font-size: 15px; }
 .emptyEmoji { font-size: 40px; margin-bottom: 12px; }
 
-/* ── 交付卡 ── */
+/* â”€â”€ äº¤ä»˜å¡ â”€â”€ */
 .noteCard { padding: 20px; }
 .noteHead { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
 .noteIndex {
@@ -307,7 +307,7 @@ input:focus, textarea:focus, select:focus {
 .tipLine { margin-top: 14px; font-size: 13px; color: var(--ink2); }
 .noteActions { margin-top: 16px; }
 
-/* ── 工作日志 ── */
+/* â”€â”€ å·¥ä½œæ—¥å¿— â”€â”€ */
 .logCard { display: flex; flex-direction: column; max-height: calc(100vh - 40px); }
 .logHead {
   display: flex; align-items: center; justify-content: space-between;
@@ -339,7 +339,7 @@ input:focus, textarea:focus, select:focus {
   .btn { transition: none; }
 }
 
-/* ── 响应式 ── */
+/* â”€â”€ å“åº”å¼ â”€â”€ */
 @media (max-width: 960px) {
   .onboardGrid { grid-template-columns: 1fr; }
   .onboardBadge { max-width: 320px; margin: 0 auto; }
@@ -352,7 +352,7 @@ input:focus, textarea:focus, select:focus {
   .onboardHero h1 { font-size: 30px; }
 }
 
-/* ── 抖音专员追加样式 ── */
+/* â”€â”€ æŠ–éŸ³ä¸“å‘˜è¿½åŠ æ ·å¼ â”€â”€ */
 .hookQuote {
   background: linear-gradient(135deg, #1b1b1f 0%, #2a2a31 100%);
   color: #fff;
@@ -403,7 +403,7 @@ input:focus, textarea:focus, select:focus {
 
 .jyStep { font-size: 13px; padding: 5px 0; line-height: 1.6; }
 
-/* ============ 投喂模式 / 三入口入职 / 发布备料（抖音黑红） ============ */
+/* ============ æŠ•å–‚æ¨¡å¼ / ä¸‰å…¥å£å…¥èŒ / å‘å¸ƒå¤‡æ–™ï¼ˆæŠ–éŸ³é»‘çº¢ï¼‰ ============ */
 .modeTabs { display: flex; gap: 10px; margin-bottom: 14px; }
 .modeTab { flex: 1; padding: 14px 16px; border: 1.5px solid #2A2A2A; background: #1A1A1A; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: 800; color: #B8B8B8; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: .2s; }
 .modeTab span { font-size: 12px; font-weight: 400; color: #777; }
@@ -452,17 +452,17 @@ input:focus, textarea:focus, select:focus {
 .notePhotosRow img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; border: 1px solid #2A2A2A; display: block; }
 @media (max-width: 640px) { .feedRow { flex-direction: column; } .feedFieldSm { flex: 1; } .modeTab { font-size: 14px; } .grid2 { grid-template-columns: 1fr; } }
 
-/* ============ 阿抖 · 素材成片（认真排版版）============ */
+/* ============ é˜¿æŠ– Â· ç´ ææˆç‰‡ï¼ˆè®¤çœŸæŽ’ç‰ˆç‰ˆï¼‰============ */
 .as { display:flex; flex-direction:column; gap:20px; }
 .as-lead { font-size:14px; color:var(--ink2); line-height:1.7; margin:0; }
 
-/* 区块 */
+/* åŒºå— */
 .as-sec { display:flex; flex-direction:column; gap:12px; }
 .as-secHd { display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; color:var(--ink); }
 .as-secHd em { font-style:normal; font-size:12px; font-weight:400; color:var(--ink2); }
 .as-secNo { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:var(--red); color:#fff; font-size:13px; font-weight:700; }
 
-/* 空状态：大拖拽区 */
+/* ç©ºçŠ¶æ€ï¼šå¤§æ‹–æ‹½åŒº */
 .as-drop { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
   padding:36px; border:2px dashed var(--line); border-radius:var(--radius); background:var(--surface);
   color:var(--ink2); font-size:14px; cursor:pointer; transition:.15s; }
@@ -470,7 +470,7 @@ input:focus, textarea:focus, select:focus {
 .as-dropIcon { font-size:32px; line-height:1; color:var(--ink2); }
 .as-drop:hover .as-dropIcon { color:var(--red); }
 
-/* 素材网格 */
+/* ç´ æç½‘æ ¼ */
 .as-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(82px,1fr)); gap:10px; }
 .as-item { margin:0; display:flex; flex-direction:column; gap:5px; }
 .as-thumb { position:relative; aspect-ratio:3/4; background-size:cover; background-position:center;
@@ -485,7 +485,7 @@ input:focus, textarea:focus, select:focus {
 .as-add:hover:not(:disabled) { border-color:var(--red); color:var(--red); }
 .as-count { font-size:12px; color:var(--ink2); }
 
-/* 输入框——重点修：文字深色、placeholder浅灰、聚焦红边 */
+/* è¾“å…¥æ¡†â€”â€”é‡ç‚¹ä¿®ï¼šæ–‡å­—æ·±è‰²ã€placeholderæµ…ç°ã€èšç„¦çº¢è¾¹ */
 .as-input, .as-textarea {
   width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:10px;
   background:var(--surface); color:var(--ink); font-size:15px; font-family:var(--sans); line-height:1.6;
@@ -496,7 +496,7 @@ input:focus, textarea:focus, select:focus {
 .as-input--title { font-size:17px; font-weight:700; }
 .as-textarea { resize:vertical; }
 
-/* 日志 */
+/* æ—¥å¿— */
 .as-logs { background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:14px 16px;
   display:flex; flex-direction:column; gap:6px; max-height:200px; overflow-y:auto; }
 .as-log { font-size:13px; line-height:1.55; color:var(--ink2); }
@@ -504,7 +504,7 @@ input:focus, textarea:focus, select:focus {
 .as-log--warn { color:var(--amber); }
 .as-log--err { color:var(--red-deep); }
 
-/* 内容方案卡片 */
+/* å†…å®¹æ–¹æ¡ˆå¡ç‰‡ */
 .as-plan { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
   padding:22px; display:flex; flex-direction:column; gap:18px; box-shadow:var(--shadow); }
 .as-planHd { display:flex; align-items:baseline; justify-content:space-between; gap:10px; padding-bottom:14px; border-bottom:1px solid var(--line); }
@@ -515,7 +515,7 @@ input:focus, textarea:focus, select:focus {
 .as-label { font-size:13px; font-weight:600; color:var(--ink2); display:flex; align-items:center; gap:8px; }
 .as-labelEm { font-style:normal; font-weight:400; font-size:12px; color:#a9a9b2; }
 
-/* 分镜列表 */
+/* åˆ†é•œåˆ—è¡¨ */
 .as-shots { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
 .as-shot { display:flex; align-items:center; gap:12px; padding:10px; background:var(--bg); border-radius:12px; }
 .as-shotNo { flex-shrink:0; width:22px; height:22px; border-radius:50%; background:var(--ink); color:#fff;
@@ -533,7 +533,14 @@ input:focus, textarea:focus, select:focus {
 .as-shotMove button:hover:not(:disabled) { border-color:var(--red); color:var(--red); }
 .as-shotMove button:disabled { opacity:.35; cursor:default; }
 
-/* 确认区 */
+/* ç¡®è®¤åŒº */
 .as-confirm { display:flex; flex-direction:column; gap:10px; padding-top:16px; border-top:1px solid var(--line); }
 .as-confirmOk { font-size:14px; font-weight:600; color:var(--green); background:var(--green-soft); padding:10px 14px; border-radius:8px; text-align:center; }
 .as-exportNote { margin:0; font-size:12px; color:var(--ink2); line-height:1.6; }
+
+/* ä¸€é”®åˆæˆç›¸å…³ */
+.as-bgmRow { display:flex; }
+.as-composeMsg { font-size:13px; color:var(--ink2); background:var(--bg); padding:11px 14px; border-radius:8px; line-height:1.6; }
+.as-composeMsg.ok { color:var(--green); background:var(--green-soft); font-weight:600; }
+.as-result { display:flex; flex-direction:column; gap:10px; align-items:stretch; }
+.as-video { width:100%; max-width:320px; margin:0 auto; border-radius:12px; background:#000; aspect-ratio:9/16; }
