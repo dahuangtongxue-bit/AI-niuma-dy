@@ -12,9 +12,15 @@ export default function AssetsStudio({ profile }) {
   const [plan, setPlan] = useState(null);
   const [draft, setDraft] = useState(null);
   const [confirmed, setConfirmed] = useState(false);
+  const [composing, setComposing] = useState(false);   // 正在云端合成
+  const [composeMsg, setComposeMsg] = useState('');     // 合成进度文字
+  const [videoUrl, setVideoUrl] = useState('');         // 成片下载地址
+  const COMPOSE_API = process.env.NEXT_PUBLIC_COMPOSE_API || '';  // 合成后端地址（配了才有一键合成）
   const [error, setError] = useState('');
+  const [bgmFile, setBgmFile] = useState(null);
   const stopRef = useRef({ stop: false });
   const fileRef = useRef(null);
+  const bgmRef = useRef(null);
 
   const log = (m, t) => setLogs((l) => [...l, { m, t, k: Date.now() + Math.random() }]);
 
@@ -110,6 +116,57 @@ export default function AssetsStudio({ profile }) {
     const a = document.createElement('a');
     a.href = url; a.download = `阿抖剪辑配置_${draft.title || '未命名'}.txt`;
     a.click(); URL.revokeObjectURL(url);
+  }
+
+  // 【全自动】把素材+方案发给合成后端，等成片回来
+  async function composeOnCloud() {
+    if (!draft || !COMPOSE_API) return;
+    setComposing(true); setComposeMsg('正在上传素材…'); setVideoUrl('');
+    try {
+      // 组装 shots（按顺序，带字幕）
+      const shots = draft.order.map((idx) => {
+        const a = assets[idx - 1];
+        return a ? { file: a.name, sub: draft.caps[idx] || '' } : null;
+      }).filter(Boolean);
+
+      const fd = new FormData();
+      // 上传所有素材的原始文件
+      const usedNames = new Set(shots.map((s) => s.file));
+      for (const a of assets) {
+        if (usedNames.has(a.name)) fd.append('files', a.file, a.name);
+      }
+      // BGM：用户要放一首；这里先要求页面已选 bgm（见下方 bgmFile）
+      if (!bgmFile) { setComposeMsg('请先选一首背景音乐（BGM）'); setComposing(false); return; }
+      fd.append('bgm', bgmFile, bgmFile.name);
+      fd.append('plan', JSON.stringify({ shots, opts: { burn_sub: true } }));
+
+      setComposeMsg('素材上传中，合成马上开始…');
+      const res = await fetch(`${COMPOSE_API}/compose`, { method: 'POST', body: fd });
+      if (!res.ok) throw new Error(`提交失败 HTTP ${res.status}`);
+      const { job_id } = await res.json();
+      if (!job_id) throw new Error('没拿到任务号');
+
+      // 轮询状态
+      setComposeMsg('阿抖正在合成视频…（看素材多少，约几十秒到几分钟）');
+      let tries = 0;
+      while (tries < 150) {
+        await new Promise((r) => setTimeout(r, 2000));
+        tries++;
+        const st = await fetch(`${COMPOSE_API}/status/${job_id}`).then((r) => r.json()).catch(() => null);
+        if (!st) continue;
+        if (st.status === 'done') {
+          setVideoUrl(`${COMPOSE_API}${st.download}`);
+          setComposeMsg(`✓ 成片完成！时长约 ${st.duration}s${st.burn_sub ? '（已烧字幕）' : ''}`);
+          setComposing(false);
+          return;
+        }
+        if (st.status === 'error') throw new Error(st.message || '合成出错');
+      }
+      throw new Error('合成超时');
+    } catch (e) {
+      setComposeMsg('合成失败：' + (e.message || e));
+      setComposing(false);
+    }
   }
 
   const descOf = (idx) => (plan?._assets || []).find((x) => x.idx === idx)?.desc || '';
@@ -218,11 +275,34 @@ export default function AssetsStudio({ profile }) {
           <div className="as-confirm">
             {!confirmed ? (
               <button className="btn btnPrimary btnBig" onClick={() => setConfirmed(true)}>✓ 确认这份方案</button>
+            ) : COMPOSE_API ? (
+              <>
+                {/* 全自动：选BGM → 一键合成 */}
+                <input ref={bgmRef} type="file" accept="audio/*" onChange={(e) => setBgmFile(e.target.files?.[0] || null)} hidden />
+                <div className="as-bgmRow">
+                  <button className="btn btnGhost" onClick={() => bgmRef.current?.click()} disabled={composing}>
+                    🎵 {bgmFile ? `已选：${bgmFile.name}` : '选一首背景音乐'}
+                  </button>
+                </div>
+                {!videoUrl ? (
+                  <button className="btn btnPrimary btnBig" onClick={composeOnCloud} disabled={composing || !bgmFile}>
+                    {composing ? '⏳ 合成中…' : '🎬 一键合成视频'}
+                  </button>
+                ) : null}
+                {composeMsg && <div className={`as-composeMsg ${videoUrl ? 'ok' : ''}`}>{composeMsg}</div>}
+                {videoUrl && (
+                  <div className="as-result">
+                    <video className="as-video" src={videoUrl} controls playsInline />
+                    <a className="btn btnPrimary btnBig" href={videoUrl} download="阿抖成片.mp4">⬇ 下载成片</a>
+                    <button className="btn btnGhost btnSmall" onClick={() => { setVideoUrl(''); setComposeMsg(''); }}>重新合成</button>
+                  </div>
+                )}
+              </>
             ) : (
               <>
-                <div className="as-confirmOk">✓ 已确认，可导出给本地卡点引擎合成</div>
+                <div className="as-confirmOk">✓ 已确认</div>
                 <button className="btn btnPrimary btnBig" onClick={exportForEngine}>⬇ 导出剪辑配置</button>
-                <p className="as-exportNote">把配置里的 SHOTS 整段贴进卡点引擎脚本，素材 + bgm.mp3 放好，跑一下就出成片。下一步我们会让这步也自动化。</p>
+                <p className="as-exportNote">（未配置合成后端，先用导出方式）把配置里的 SHOTS 贴进卡点引擎，素材 + bgm.mp3 放好跑一下出片。</p>
               </>
             )}
           </div>
