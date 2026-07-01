@@ -146,23 +146,26 @@ export default function AssetsStudio({ profile }) {
       const { job_id } = await res.json();
       if (!job_id) throw new Error('没拿到任务号');
 
-      // 轮询状态
-      setComposeMsg('阿抖正在合成视频…（看素材多少，约几十秒到几分钟）');
+      // 轮询状态（最多等15分钟，视频转码较慢）
       let tries = 0;
-      while (tries < 150) {
+      const MAX_TRIES = 450;  // 450 * 2秒 = 15分钟
+      while (tries < MAX_TRIES) {
         await new Promise((r) => setTimeout(r, 2000));
         tries++;
+        const elapsed = Math.floor(tries * 2 / 60);
+        const secs = (tries * 2) % 60;
+        setComposeMsg(`阿抖正在合成视频…（已用时 ${elapsed}分${secs}秒；素材含视频时需先转码，请耐心等）`);
         const st = await fetch(`${COMPOSE_API}/status/${job_id}`).then((r) => r.json()).catch(() => null);
         if (!st) continue;
         if (st.status === 'done') {
           setVideoUrl(`${COMPOSE_API}${st.download}`);
-          setComposeMsg(`✓ 成片完成！时长约 ${st.duration}s${st.burn_sub ? '（已烧字幕）' : ''}`);
+          setComposeMsg(`✓ 成片完成！时长约 ${st.duration}s${st.burn_sub ? '（已烧字幕）' : ''}${st.skipped && st.skipped.length ? `（${st.skipped.length}个素材因格式问题跳过）` : ''}`);
           setComposing(false);
           return;
         }
         if (st.status === 'error') throw new Error(st.message || '合成出错');
       }
-      throw new Error('合成超时');
+      throw new Error('合成超时（15分钟）。素材可能太多，建议减少素材数量再试。');
     } catch (e) {
       setComposeMsg('合成失败：' + (e.message || e));
       setComposing(false);
