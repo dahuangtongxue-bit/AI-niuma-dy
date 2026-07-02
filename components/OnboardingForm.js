@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { extractDoc, ACCEPT } from '@/lib/docExtract';
 
 const TONES = ['接地气老板风', '专业讲师风', '活泼搞笑风', '犀利毒舌风'];
 const CONDS = ['纯字卡+AI配音', '真人口播', '可拍剧情'];
@@ -33,6 +34,7 @@ export default function OnboardingForm({ onHire }) {
   const [mode, setMode] = useState('smart');
   const [url, setUrl] = useState('');
   const [images, setImages] = useState([]);
+  const [texts, setTexts] = useState([]);   // 资料文档文本 [{name, content}]
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const [note, setNote] = useState('');
@@ -41,23 +43,44 @@ export default function OnboardingForm({ onHire }) {
   const [cond, setCond] = useState(CONDS[0]);
   const fileRef = useRef(null);
 
-  function pickFiles(e) {
-    const files = [...(e.target.files || [])].slice(0, 4);
-    Promise.all(files.map((f) => new Promise((res) => {
-      const r = new FileReader();
-      r.onload = () => res(r.result);
-      r.readAsDataURL(f);
-    }))).then((urls) => setImages((prev) => [...prev, ...urls].slice(0, 4)));
+  async function pickFiles(e) {
+    const files = [...(e.target.files || [])];
+    if (!files.length) return;
+    const fails = [];
+    for (const f of files) {
+      try {
+        if (f.type.startsWith('image/')) {
+          const dataUrl = await new Promise((res, rej) => {
+            const r = new FileReader();
+            r.onload = () => res(r.result);
+            r.onerror = rej;
+            r.readAsDataURL(f);
+          });
+          setImages((prev) => [...prev, dataUrl].slice(0, 4));
+        } else {
+          const r = await extractDoc(f);
+          if (r.kind === 'text' && r.content) {
+            setTexts((prev) => [...prev.filter((t) => t.name !== r.name), { name: r.name, content: r.content }].slice(0, 8));
+          } else if (r.kind === 'images') {
+            for (const u of r.images) setImages((prev) => [...prev, u].slice(0, 4));
+          }
+        }
+      } catch (err) {
+        fails.push(`${f.name}（${err.message || '读取失败'}）`);
+      }
+    }
+    if (fails.length) setErr(`部分文件未能读取：${fails.join('；')}`);
+    if (e.target) e.target.value = '';
   }
 
   async function extract() {
     setErr(''); setNote('');
-    if (!url.trim() && images.length === 0) { setErr('贴一个链接，或上传至少一张截图（点评页/菜单/门头都行）'); return; }
+    if (!url.trim() && images.length === 0 && texts.length === 0) { setErr('贴一个链接，或上传截图/资料文档（点评页、菜单、门头、PDF/Word都行）'); return; }
     setBusy(true);
     try {
       const r = await fetch('/api/extract', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: url.trim(), images }),
+        body: JSON.stringify({ url: url.trim(), images, texts }),
       });
       const d = await r.json().catch(() => ({}));
       if (!r.ok || d.error) {
@@ -148,14 +171,25 @@ export default function OnboardingForm({ onHire }) {
           <label className="field"><span>店铺链接（官网 / 公众号文章皆可）</span>
             <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://… 官网或一篇公众号推文链接" />
           </label>
-          <div className="hintNote" style={{ marginTop: -4 }}>💡 大众点评等链接常因反爬抓不到，<b>最稳的是上传截图</b>：点评店铺页、菜单、门头都行（多模态识别）。</div>
-          <label className="field"><span>上传截图 / 图片（最多 4 张）</span>
-            <input ref={fileRef} type="file" accept="image/*" multiple onChange={pickFiles} />
+          <div className="hintNote" style={{ marginTop: -4 }}>💡 大众点评等链接常因反爬抓不到，<b>最稳的是上传截图或资料文档</b>：点评店铺页、菜单、门头，或菜单PDF、产品资料Word/Excel都行（多模态识别）。</div>
+          <label className="field"><span>上传图片 / 资料文档（图片最多4张，支持 PDF/Word/Excel/PPT/txt）</span>
+            <input ref={fileRef} type="file" accept={ACCEPT} multiple onChange={pickFiles} />
           </label>
           {images.length ? (
             <div className="thumbRow">
               {images.map((src, i) => (
                 <div className="thumb" key={i}><img src={src} alt="" /><button onClick={() => setImages(images.filter((_, j) => j !== i))}>×</button></div>
+              ))}
+            </div>
+          ) : null}
+
+          {texts.length ? (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+              {texts.map((t, i) => (
+                <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '4px 10px', borderRadius: 8, background: 'rgba(0,0,0,.05)', border: '1px solid rgba(0,0,0,.08)' }}>
+                  📄 {t.name}
+                  <button onClick={() => setTexts(texts.filter((_, j) => j !== i))} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: 13, lineHeight: 1, padding: 0 }}>×</button>
+                </span>
               ))}
             </div>
           ) : null}
