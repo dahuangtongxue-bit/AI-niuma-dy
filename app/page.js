@@ -36,7 +36,7 @@ export default function Page() {
       <div className="onboarding">
         <div className="lanyard" />
         <div className="onboardHero">
-          <h1>给你的号，雇一位<span className="hl">抖音运营专员</span></h1>
+          <h1>给你的品牌，雇一位<span className="hl">抖音运营专员</span></h1>
           <p>她叫阿抖。每天交付 3 个能直接开拍的剧本包：黄金3秒定稿、分镜表、成套字卡、质检报告、剪映组装指引，一样不少。</p>
         </div>
         <div className="onboardGrid">
