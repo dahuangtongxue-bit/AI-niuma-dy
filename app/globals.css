@@ -544,3 +544,16 @@ input:focus, textarea:focus, select:focus {
 .as-composeMsg.ok { color:var(--green); background:var(--green-soft); font-weight:600; }
 .as-result { display:flex; flex-direction:column; gap:10px; align-items:stretch; }
 .as-video { width:100%; max-width:320px; margin:0 auto; border-radius:12px; background:#000; aspect-ratio:9/16; }
+
+/* ===== å“ç‰ŒDNAæ¡ï¼ˆå¸å—DNAè£…è½½/åˆ‡æ¢ï¼‰===== */
+.dnaBar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; max-width:1180px; margin:0 auto 14px; padding:10px 14px; background:var(--surface); border:1px solid var(--line); border-radius:12px; font-size:13px; }
+.dnaIcon { font-size:16px; }
+.dnaLabel { color:var(--ink2); }
+.dnaSelect { padding:7px 10px; border:1px solid var(--line); border-radius:8px; background:var(--surface); color:var(--ink); font-size:13px; font-family:inherit; max-width:260px; }
+.dnaSelect:focus { outline:none; border-color:var(--red); }
+.dnaPersona { font-size:12px; color:var(--red); background:var(--red-soft); padding:3px 9px; border-radius:10px; }
+.dnaBtn { padding:6px 11px; border:1px solid var(--line); background:var(--surface); color:var(--ink2); border-radius:8px; cursor:pointer; font-size:12px; }
+.dnaBtn:hover { border-color:var(--red); color:var(--red); }
+.dnaBtnMain { border-color:var(--red); color:var(--red); font-weight:600; }
+.dnaBtnDanger:hover { border-color:#c0392b; color:#c0392b; }
+.dnaMsg { font-size:12px; color:var(--green); }
