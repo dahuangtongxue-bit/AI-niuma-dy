@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { extractDoc, ACCEPT } from '@/lib/docExtract';
+import { addDNA } from '@/lib/dna';
 
 const TONES = ['接地气老板风', '专业讲师风', '活泼搞笑风', '犀利毒舌风'];
 const CONDS = ['纯字卡+AI配音', '真人口播', '可拍剧情'];
@@ -43,6 +44,31 @@ export default function OnboardingForm({ onHire }) {
   const [cond, setCond] = useState(CONDS[0]);
   const fileRef = useRef(null);
 
+  const dnaFileRef = useRef(null);
+
+  // —— DNA 快速上岗：司南建好的品牌，导入即完成入职，不用重新登记 ——
+  function hireByDna(dna) {
+    addDNA(dna);  // 校验、入库并设为当前品牌
+    onHire(toProfile(dna.profile || {}, TONES[0]));
+  }
+  async function pasteDna() {
+    setErr('');
+    try {
+      const text = await navigator.clipboard.readText();
+      hireByDna(JSON.parse(text));
+    } catch (e) {
+      setErr('剪贴板里不是有效的品牌DNA——先在司南品牌卡上点「📋 复制DNA」，再回来点这里。');
+    }
+  }
+  async function pickDnaFile(e) {
+    setErr('');
+    const f = e.target.files?.[0];
+    if (!f) return;
+    try { hireByDna(JSON.parse(await f.text())); }
+    catch (err) { setErr('不是有效的品牌DNA文件（请从司南导出）'); }
+    if (e.target) e.target.value = '';
+  }
+
   async function pickFiles(e) {
     const files = [...(e.target.files || [])];
     if (!files.length) return;
@@ -75,7 +101,7 @@ export default function OnboardingForm({ onHire }) {
 
   async function extract() {
     setErr(''); setNote('');
-    if (!url.trim() && images.length === 0 && texts.length === 0) { setErr('贴一个链接，或上传截图/资料文档（点评页、菜单、门头、PDF/Word都行）'); return; }
+    if (!url.trim() && images.length === 0 && texts.length === 0) { setErr('贴一个链接，或上传截图/资料文档（店铺页、产品页、介绍PDF/Word都行）'); return; }
     setBusy(true);
     try {
       const r = await fetch('/api/extract', {
@@ -159,7 +185,14 @@ export default function OnboardingForm({ onHire }) {
     <div className="card formCard">
       <div className="formHead">
         <h2>入职登记 · 岗前培训</h2>
-        <p>给阿抖一个链接或几张截图，她先读懂你的店——这样拍出来的每一条，都是<b>你家店的真东西</b>。</p>
+        <p>给阿抖一个链接或几张截图，她先读懂你的品牌——这样拍出来的每一条，都是<b>你家的真东西</b>。</p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', padding: '12px 14px', margin: '4px 0 14px', background: 'rgba(46,164,79,.07)', border: '1px solid rgba(46,164,79,.3)', borderRadius: 10, fontSize: 13 }}>
+        <span>🧬 <b>已在司南建好品牌DNA？</b>不用重新登记——</span>
+        <button className="btn btnPrimary btnSmall" onClick={pasteDna}>📋 粘贴导入，直接上岗</button>
+        <button className="btn btnGhost btnSmall" onClick={() => dnaFileRef.current?.click()}>⬆ DNA文件</button>
+        <input ref={dnaFileRef} type="file" accept=".json,application/json" hidden onChange={pickDnaFile} />
+      </div>
+
       </div>
       <div className="segTabs">
         <button className={`segTab ${mode === 'smart' ? 'on' : ''}`} onClick={() => setMode('smart')}>🔗 贴链接 / 传截图</button>
@@ -168,10 +201,10 @@ export default function OnboardingForm({ onHire }) {
 
       {mode === 'smart' ? (
         <>
-          <label className="field"><span>店铺链接（官网 / 公众号文章皆可）</span>
+          <label className="field"><span>主体链接（官网 / 店铺 / 公众号文章皆可）</span>
             <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://… 官网或一篇公众号推文链接" />
           </label>
-          <div className="hintNote" style={{ marginTop: -4 }}>💡 大众点评等链接常因反爬抓不到，<b>最稳的是上传截图或资料文档</b>：点评店铺页、菜单、门头，或菜单PDF、产品资料Word/Excel都行（多模态识别）。</div>
+          <div className="hintNote" style={{ marginTop: -4 }}>💡 大众点评等链接常因反爬抓不到，<b>最稳的是上传截图或资料文档</b>：点评/店铺页、产品页、门头菜单，或介绍PDF、产品资料Word/Excel都行（多模态识别）。</div>
           <label className="field"><span>上传图片 / 资料文档（图片最多4张，支持 PDF/Word/Excel/PPT/txt）</span>
             <input ref={fileRef} type="file" accept={ACCEPT} multiple onChange={pickFiles} />
           </label>
@@ -195,7 +228,7 @@ export default function OnboardingForm({ onHire }) {
           ) : null}
           {note ? <div className="hintNote">ℹ️ {note}</div> : null}
           {err ? <div className="hintErr">{err}</div> : null}
-          <button className="btn btnPrimary" onClick={extract} disabled={busy}>{busy ? '阿抖正在读你的店…' : '让阿抖读取素材 →'}</button>
+          <button className="btn btnPrimary" onClick={extract} disabled={busy}>{busy ? '阿抖正在读资料…' : '让阿抖读取素材 →'}</button>
         </>
       ) : (
         <>
