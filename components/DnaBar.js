@@ -32,6 +32,19 @@ export default function DnaBar() {
     if (fileRef.current) fileRef.current.value = '';
   }
 
+  async function onPaste() {
+    try {
+      const text = await navigator.clipboard.readText();
+      const dna = JSON.parse(text);
+      addDNA(dna);
+      refresh();
+      setMsg(`✓ 已装载「${dna.profile?.name || '品牌'}」`);
+    } catch (err) {
+      setMsg('✗ 剪贴板里不是有效的品牌DNA（先在司南点「📋 复制DNA」）');
+    }
+    setTimeout(() => setMsg(''), 3000);
+  }
+
   function onSwitch(e) {
     setCurrent(e.target.value);
     refresh();
@@ -55,7 +68,8 @@ export default function DnaBar() {
       {dnas.length === 0 ? (
         <>
           <span className="dnaLabel">品牌DNA：未装载（用阿抖自己的档案干活）</span>
-          <button className="dnaBtn dnaBtnMain" onClick={() => fileRef.current?.click()}>⬆ 导入品牌DNA</button>
+          <button className="dnaBtn dnaBtnMain" onClick={onPaste}>📋 粘贴导入（司南复制后点这里）</button>
+          <button className="dnaBtn" onClick={() => fileRef.current?.click()}>⬆ 导入文件</button>
         </>
       ) : (
         <>
@@ -68,7 +82,8 @@ export default function DnaBar() {
             ))}
           </select>
           {personaName && <span className="dnaPersona">{personaName}</span>}
-          <button className="dnaBtn" onClick={() => fileRef.current?.click()}>＋导入</button>
+          <button className="dnaBtn" onClick={onPaste}>📋 粘贴</button>
+          <button className="dnaBtn" onClick={() => fileRef.current?.click()}>＋文件</button>
           <button className="dnaBtn dnaBtnDanger" onClick={onRemove}>移除</button>
         </>
       )}
